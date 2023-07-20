@@ -1,5 +1,7 @@
 var oldPolyList = [[[1,2]]];
 var nextPolyList = [];
+var drawList;
+var drawK;
 var transforms = [];
 var adjList = [[2,-1],[-2,1],[4,2],[3,1],[2,4],[1,3],[-1,3]];
 var banList = [[-1,2],[-2,-1],[1,-2],[2,1]];
@@ -18,10 +20,10 @@ function init() {
     nextPolyList = nextOrderPolys(oldPolyList);
     goSave(nextPolyList,k);
     goSvg(nextPolyList,k);
-    if (k===5) { draw(nextPolyList,k); }
+    if (k===3) { drawList = nextPolyList; drawK = k; }
     oldPolyList = nextPolyList;
   }
-
+  draw(nextPolyList,k);
 
 }
 
