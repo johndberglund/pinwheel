@@ -27,9 +27,11 @@ function setOrder() {
   var maxOrder = document.getElementById("order").value;
   var oldPolyList = [[[1,2]]];
   var nextPolyList = [];
-  for (var k = 2;k<=maxOrder; k++) {
-    nextPolyList = nextOrderPolys(oldPolyList);
-    oldPolyList = nextPolyList;
+  if (maxOrder < 5) {
+    for (var k = 2;k<=maxOrder; k++) {
+      nextPolyList = nextOrderPolys(oldPolyList);
+      oldPolyList = nextPolyList;
+    }
   }
   draw(nextPolyList,maxOrder);
 }
