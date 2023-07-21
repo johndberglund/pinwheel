@@ -1,7 +1,4 @@
-var oldPolyList = [[[1,2]]];
-var nextPolyList = [];
-var drawList;
-var drawK;
+//var nextPolyList = [];
 var transforms = [];
 var adjList = [[2,-1],[-2,1],[4,2],[3,1],[2,4],[1,3],[-1,3]];
 var banList = [[-1,2],[-2,-1],[1,-2],[2,1]];
@@ -9,31 +6,32 @@ var myShape = [[0,0],[-1,2.5],[2.5,2.5],[2.5,1]];
 var newShape;
 
 function init() {
-//  transforms.push([]);
   var c = document.getElementById("myCanvas");
   var context = c.getContext("2d");
   c.height = window.innerHeight-220;
   c.width = window.innerWidth-205;
 
-
-  for (var k = 2;k<7; k++) {
-    nextPolyList = nextOrderPolys(oldPolyList);
-    goSave(nextPolyList,k);
-    goSvg(nextPolyList,k);
-    if (k===3) { drawList = nextPolyList; drawK = k; }
-    oldPolyList = nextPolyList;
-  }
-  draw(nextPolyList,k);
-
+  setOrder();
 }
 
 function resize() {
-    var c = document.getElementById("myCanvas");
-    var context = c.getContext("2d");
-    c.height = (window.innerHeight-220);
-    c.width = (window.innerWidth-205);
+  var c = document.getElementById("myCanvas");
+  var context = c.getContext("2d");
+  c.height = (window.innerHeight-220);
+  c.width = (window.innerWidth-205);
 
-    draw();
+  setOrder();
+}
+
+function setOrder() {
+  var maxOrder = document.getElementById("order").value;
+  var oldPolyList = [[[1,2]]];
+  var nextPolyList = [];
+  for (var k = 2;k<=maxOrder; k++) {
+    nextPolyList = nextOrderPolys(oldPolyList);
+    oldPolyList = nextPolyList;
+  }
+  draw(nextPolyList,maxOrder);
 }
 
 function coord2Trans(x,y) {
@@ -209,6 +207,17 @@ function transPolyUnique(poly,thisList) {
   return(unique);
 }
 
+function goSaveData() {
+  var maxOrder = document.getElementById("order").value;
+  var oldPolyList = [[[1,2]]];
+  var nextPolyList = [];
+  for (var k = 2;k<=maxOrder; k++) {
+    nextPolyList = nextOrderPolys(oldPolyList);
+    oldPolyList = nextPolyList;
+  }
+  goSave(nextPolyList,maxOrder);
+
+}
 
 function txtToFile(content, filename, contentType) {
   const a = document.createElement('a');
@@ -234,7 +243,16 @@ function goSave(polyList,level) {
   txtToFile(asOutput,fileName,"txt");
 }
 
-
+function goSaveSvg() {
+  var maxOrder = document.getElementById("order").value;
+  var oldPolyList = [[[1,2]]];
+  var nextPolyList = [];
+  for (var k = 2;k<=maxOrder; k++) {
+    nextPolyList = nextOrderPolys(oldPolyList);
+    oldPolyList = nextPolyList;
+  }
+  goSvg(nextPolyList,maxOrder);
+}
 
 function svgToFile(content, filename, contentType) {
   const a = document.createElement('a');
@@ -287,37 +305,41 @@ function draw(polyList, level) {
   context.fillStyle = "white";
   context.fill();
 
+  if (level<5) {
 
-  var thisSize = 20*level;
-  var thisHeight = thisSize*10;
-  var thisWidth = thisSize*Math.ceil(polyList.length/10);
-  c.width = thisWidth;
-  c.height = thisHeight;
-  for (var j=0;j<polyList.length;j++) {
-    var thisRow = Math.floor(j/10);
-    var thisCol = j-thisRow*10;
-    var thisPoly = polyList[j];
-    var myMat;
-    thisPoly.forEach(function(nextPt){
-      myMat = coord2Trans(nextPt[0],nextPt[1]);
-      newShape = [];
-      myShape.forEach(function(pt) {
-        var nextOne = multVectMat([pt[0],pt[1],1],myMat);
-        newShape.push([nextOne[0],nextOne[1]]);
-      });
+    var thisSize = 20*level;
+    var thisHeight = thisSize*10;
+    var thisWidth = thisSize*Math.ceil(polyList.length/10);
+    c.width = thisWidth;
+    c.height = thisHeight;
+    for (var j=0;j<polyList.length;j++) {
+      var thisRow = Math.floor(j/10);
+      var thisCol = j-thisRow*10;
+      var thisPoly = polyList[j];
+      var myMat;
+      thisPoly.forEach(function(nextPt){
+        myMat = coord2Trans(nextPt[0],nextPt[1]);
+        newShape = [];
+        myShape.forEach(function(pt) {
+          var nextOne = multVectMat([pt[0],pt[1],1],myMat);
+          newShape.push([nextOne[0],nextOne[1]]);
+        });
 
-      context.moveTo(newShape[0][0]*4+thisSize*thisRow+thisSize/2,50-newShape[0][1]*4+thisSize*thisCol);
-      for (var i = 1;i<newShape.length;i++) {
-        context.lineTo(newShape[i][0]*4+thisSize*thisRow+thisSize/2,50-newShape[i][1]*4+thisSize*thisCol);
+        context.moveTo(newShape[0][0]*4+thisSize*thisRow+thisSize/2,50-newShape[0][1]*4+thisSize*thisCol);
+        for (var i = 1;i<newShape.length;i++) {
+          context.lineTo(newShape[i][0]*4+thisSize*thisRow+thisSize/2,50-newShape[i][1]*4+thisSize*thisCol);
+          context.stroke();
+        }
+        context.lineTo(newShape[0][0]*4+thisSize*thisRow+thisSize/2,50-newShape[0][1]*4+thisSize*thisCol);
         context.stroke();
-      }
-      context.lineTo(newShape[0][0]*4+thisSize*thisRow+thisSize/2,50-newShape[0][1]*4+thisSize*thisCol);
-      context.stroke();
-    }); // end thisPoly loop
-  } // end for loop
+      }); // end thisPoly loop
+    } // end for loop
 
-//  var cRect = c.getBoundingClientRect();        
-//  var canvasX = Math.round(event.clientX - cRect.left);  
-//  var canvasY = Math.round(event.clientY - cRect.top);
+  } else {
+    c.width = 400;
+    c.height = 100;
+    context.font = "12px Arial";
+    context.fillText("Try downloading. I won't show the big ones on the screen.",10,20);
+  }
 
 } // end draw()
