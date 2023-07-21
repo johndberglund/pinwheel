@@ -2,34 +2,15 @@
 <html>
 <head>
 <title>pinwheel</title>
-<link rel="stylesheet" href="menu.css">
 <script src="pinwheel.js"></script>
 </head>
 
 <body onload="init()" onresize="resize()">
-<nav>
-<ul>
-  <li class="dropdown"><a>File</a>
-    <ul>
-<!--
-      <li><a onclick="init()">New</a>
-      <li><a><input type="file" name="file" id="loadDesign" 
-              class="inputfile" onchange="loadDesign()" />
-        <label for="loadDesign">Load design</label></a>
-      <li><a onclick="saveSVG()">Save SVG</a>
--->
-      <li><a download="myImage.png" onclick="goPng(this)">Save PNG</a>
-<!--      <li><a onclick="saveDesign()">Save design</a>
--->
-    </ul>
-  </li>
-<!--
-  <li><a href="#home">Help</a></li>
--->
-</ul>
-</nav>
-
-
+Order:
+<input type="number" id="order" style="width: 40px" onchange="setOrder()" value="3" min="2" max="6" step="1">
+<button onclick="goSaveSvg()">Save SVG</button>
+<button onclick="goSaveData()">Save data</button>
+<p>
 
 <div id="canvasDiv" style="overflow: scroll; border:3px solid red">
 <canvas id="myCanvas"  style=" border:1px solid black;"> </canvas>
